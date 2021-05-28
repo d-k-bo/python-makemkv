@@ -1,4 +1,5 @@
-from rich.progress import BarColumn, Progress, TimeRemainingColumn
+from typing import Optional
+from rich.progress import BarColumn, Progress, TimeRemainingColumn, TaskID
 
 
 class ProgressParser(Progress):
@@ -7,17 +8,17 @@ class ProgressParser(Progress):
     def __init__(self):
         super().__init__(
             "[progress.description]{task.description}",
-            BarColumn(bar_width=None,),
+            BarColumn(bar_width=None),
             "[progress.percentage]{task.percentage:>3.0f}%",
             TimeRemainingColumn(),
             transient=True,
-            expand=True
+            expand=True,
         )
-        self.task_description = None
-        self.task_id = None
-        self.started = False
+        self.task_description: str = None
+        self.task_id: Optional[TaskID] = None
+        self.started: bool = False
 
-    def parse_progress(self, task_description, progress, max):
+    def parse_progress(self, task_description: str, progress: int, max: int):
         """Updates the progress bar display.
 
         Args:
@@ -40,4 +41,5 @@ class ProgressParser(Progress):
             self.started = False
             self.task_description = task_description
             self.task_id = self.add_task(
-                task_description, completed=progress, total=max, start=False)
+                task_description, completed=progress, total=max, start=False
+            )
