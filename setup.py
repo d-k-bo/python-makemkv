@@ -8,7 +8,7 @@ with open(path.join(this_directory, "README.rst"), encoding="utf-8") as f:
 
 setup(
     name="makemkv",
-    version="0.1",
+    version="0.1.2",
     description="Python wrapper for MakeMKV",
     long_description=long_description,
     long_description_content_type="text/x-rst",

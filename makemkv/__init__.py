@@ -39,7 +39,9 @@ class MakeMKV:
         self.input = self._parse_input(input)
         self.cache = cache
         self.minlength = minlength
-        self.progress_handler = progress_handler
+        self.progress_handler: Callable[
+            [str, int, int], None
+        ] = progress_handler
         self.process: Optional[Popen] = None
 
     def info(
@@ -78,7 +80,7 @@ class MakeMKV:
 
     def mkv(
         self,
-        title: str,
+        title: Union[int, str],
         output_dir: Union[str, Path],
         cache: Optional[Union[int, str]] = None,
         minlength: Optional[Union[int, str]] = None,
@@ -213,11 +215,11 @@ class MakeMKV:
         key = KEY_CODES.get(id)
         if key:
             if flag == "SINFO":
-                if code == 2:
+                if id == 2:
                     # "downmix" seems to be more suitable
                     # for audiostreams than "name"
                     key = "downmix"
-                elif code == 3:
+                elif id == 3:
                     # convert 3-letter language codes to 2-letter codes
                     value = Lang(value).pt1
 
