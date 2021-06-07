@@ -5,14 +5,17 @@ from rich.progress import BarColumn, Progress, TimeRemainingColumn, TaskID
 class ProgressParser(Progress):
     """Renders progress bars that can be updated using a callback method."""
 
-    def __init__(self):
+    def __init__(self, **kwargs):
+        if "transient" not in kwargs:
+            kwargs["transient"] = True
+        if "expand" not in kwargs:
+            kwargs["expand"] = True
         super().__init__(
             "[progress.description]{task.description}",
             BarColumn(bar_width=None),
             "[progress.percentage]{task.percentage:>3.0f}%",
             TimeRemainingColumn(),
-            transient=True,
-            expand=True,
+            **kwargs
         )
         self.task_description: str = None
         self.task_id: Optional[TaskID] = None
