@@ -14,3 +14,8 @@ python:
   version: 3.9
   install:
     - requirements: docs/requirements.txt
+
+# needed for python3.9 support
+# see https://github.com/readthedocs/readthedocs.org/issues/7554
+build:
+  image: testing
