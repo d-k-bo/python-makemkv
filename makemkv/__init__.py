@@ -25,8 +25,8 @@ class MakeMKV:
         minlength (int or str, optional): Minimum title length in
             seconds.
         progress_handler (Callable, optional): A callback function to parse
-            progress updates. See ``makemkv.ProgressParser.parse_progress`` for
-            details.
+            progress updates. See :func:`makemkv.ProgressParser.parse_progress`
+            for details.
     """
 
     def __init__(
@@ -53,8 +53,7 @@ class MakeMKV:
 
         Args:
             cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in
-            seconds.
+            minlength (int or str, optional): Minimum title length in seconds.
 
         Returns:
             dict: A dict containing detailed information about drives, discs,
@@ -76,7 +75,7 @@ class MakeMKV:
         if minlength:
             cmd.extend(["--minlength", str(minlength)])
 
-        return self.run(cmd)
+        return self._run(cmd)
 
     def mkv(
         self,
@@ -90,14 +89,13 @@ class MakeMKV:
         Args:
             title (int or str): Title to be ripped, can be either an integer
                 starting with 0 or the keyword "all".
-            output (pathlib.Path or str): Output directory for created
+            output_dir (pathlib.Path or str): Output directory for created
                 mkv files.
             cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in
-                seconds.
+            minlength (int or str, optional): Minimum title length in seconds.
 
         Returns:
-            dict: A dict containing detailed information about drives, discs,
+            dict: A dict containing some information about drives, discs,
             titles and streams.
         """
 
@@ -118,7 +116,7 @@ class MakeMKV:
         if minlength:
             cmd.extend(["--minlength", str(minlength)])
 
-        return self.run(cmd)
+        return self._run(cmd)
 
     def backup(
         self,
@@ -130,15 +128,14 @@ class MakeMKV:
         """Backup whole disc.
 
         Args:
-            output (pathlib.Path or str): Output directory for created backup
-                files.
+            output_dir (pathlib.Path or str): Output directory for created
+                backup files.
             cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in
-                seconds.
+            minlength (int or str, optional): Minimum title length in seconds.
             decrypt (bool, optional): Decrypt stream files during backup.
 
         Returns:
-            dict: A dict containing detailed information about drives, discs,
+            dict: A dict containing some information about drives, discs,
             titles and streams.
         """
 
@@ -160,7 +157,7 @@ class MakeMKV:
         if decrypt:
             cmd.append("--decrypt")
 
-        return self.run(cmd)
+        return self._run(cmd)
 
     def f(self, *args) -> dict[str, Union[str, int, dict, list]]:
         """Run universal firmware tool.
@@ -169,14 +166,15 @@ class MakeMKV:
             args: Anything you want to append to the command.
 
         Returns:
-            dict: A dict containing detailed information about drives, discs,
+            dict: A dict containing some information about drives, discs,
             titles and streams.
         """
         cmd = ["makemkvcon", "f", *args]
 
-        return self.run(cmd)
+        return self._run(cmd)
 
-    def kill(self):
+    def kill(self) -> None:
+        """Terminate the ``makemkvcon`` progress."""
         if self.process:
             self.process.kill()
 
@@ -234,7 +232,7 @@ class MakeMKV:
         else:
             return {}
 
-    def run(self, cmd: list[str]) -> dict[str, Union[str, int, dict, list]]:
+    def _run(self, cmd: list[str]) -> dict[str, Union[str, int, dict, list]]:
         """Run makemkvcon and parse its output."""
         try:
             p = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True)

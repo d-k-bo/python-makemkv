@@ -4,7 +4,7 @@ Quickstart
 Requirements
 ------------
 
-python-makemkv requires Python 3.7 or later.
+python-makemkv requires Python 3.9 or later.
 
 Additionally, a copy of MakeMKV is required, which can be downloaded from their `website <https://www.makemkv.com/>`_. You also need to ensure that ``makemkvcon`` can be run from the terminal, e. g. by adding its location to your PATH environment variable.
 
@@ -41,14 +41,13 @@ Since this will take some time you can define a function that analyzes the progr
   from makemkv import MakeMKV, ProgressParser
 
   with ProgressParser() as progress:
-      makemkv = MakeMKV(0)
-      makemkv.mkv(0, '~/Videos/Really Cool Movie (2021)',
-                  progress_cb=progress.parse_progress)
+      makemkv = MakeMKV(0, progress_handler=progress.parse_progress)
+      makemkv.mkv(0, '~/Videos/Really Cool Movie (2021)')
 
 Command-line interface
 ~~~~~~~~~~~~~~~~~~~~~~
 
-.. code::
+.. code:: none
 
   Usage: pymakemkv [OPTIONS] COMMAND [ARGS]...
 

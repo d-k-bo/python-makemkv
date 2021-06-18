@@ -6,7 +6,7 @@ python-makemkv is a simple python wrapper for MakeMKV (written by GuinpinSoft in
 Requirements
 ------------
 
-python-makemkv requires Python 3.7 or later.
+python-makemkv requires Python 3.9 or later.
 
 Additionally, a copy of MakeMKV is required, which can be downloaded from their `website <https://www.makemkv.com/>`_. You also need to ensure that ``makemkvcon`` can be run from the terminal, e. g. by adding its location to your PATH environment variable.
 
@@ -22,7 +22,7 @@ python-makemkv can be installed using pip.
 Usage
 -----
 
-See full documentation on `Read the Docs <https://python-makemkv.readthedocs.io/en/stable/index.html>`_.
+See full documentation on `Read the Docs <https://python-makemkv.readthedocs.io/en/latest/index.html>`_.
 
 Python module
 ~~~~~~~~~~~~~~~~~~
@@ -45,9 +45,8 @@ Since this will take some time you can define a function that analyzes the progr
   from makemkv import MakeMKV, ProgressParser
 
   with ProgressParser() as progress:
-      makemkv = MakeMKV(0)
-      makemkv.mkv(0, '~/Videos/Really Cool Movie (2021)',
-                  progress_cb=progress.parse_progress)
+      makemkv = MakeMKV(0, progress_handler=progress.parse_progress)
+      makemkv.mkv(0, '~/Videos/Really Cool Movie (2021)')
 
 Command-line interface
 ~~~~~~~~~~~~~~~~~~~~~~
