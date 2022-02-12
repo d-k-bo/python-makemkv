@@ -1,0 +1,52 @@
+site_name: Welcome to python-makemkv's documentation!
+
+nav:
+  - Home: index.md
+  - Requirements: requirements.md
+  - Installation: installation.md
+  - Usage: usage.md
+  - Command-line Interface: cli.md
+  - Reference:
+      makemkv: reference/makemkv.md
+      progress: reference/progress.md
+      types: reference/types.md
+      output_codes: reference/output_codes.md
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+extra_css:
+  - stylesheets/extra.css
+
+plugins:
+  - search
+  - autorefs
+  - mkdocstrings:
+      handlers:
+        python:
+          selection:
+            docstring_style: google
+          rendering:
+            show_root_heading: true
+            members_order: source
+          import:
+            - https://docs.python.org/3/objects.inv
+            - https://rich.readthedocs.io/en/stable/objects.inv
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences

@@ -1,71 +1,89 @@
-import logging
-from pathlib import Path
-import re
-from subprocess import PIPE, STDOUT, Popen
-from typing import Callable, Optional, Union
+"""Main module of python-makemkv that provides the `MakeMKV` class."""
 
-from iso639 import Lang
+from __future__ import annotations
+
+import logging
+import re
+from os import PathLike
+from pathlib import Path, WindowsPath
+from subprocess import PIPE, STDOUT, Popen
+from typing import Any, Literal
+
+from iso639 import Lang  # type: ignore [import]
+from typing_extensions import TypedDict, get_args, get_origin, get_type_hints
 
 from .output_codes import KEY_CODES, MESSAGE_CODES, SPECIAL_VALUES
-from .progress import ProgressParser
+from .types import (
+    Disc,
+    Drive,
+    MakeMKVOutput,
+    ProgressUpdateHandlerType,
+    Stream,
+    Title,
+)
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__package__)
+makemkvcon_logger = logger.getChild("makemkvcon")
 _split_msg_exp = re.compile(
     r'[A-Z]+(?=:)|(?<=,")[^"]*(?=")|(?!:)[^,"]+|(?<=,)(?=,)'
 )
 
 
-class MakeMKV:
-    """Wrapper class for makemkvcon
+def _do_nothing(*args: Any, **kwargs: Any) -> None:
+    return
 
-    Args:
-        input (pathlib.Path or int or str): Can be either a disc number
-            starting with 0, a device, a .IFO file or a VIDEO_TS folder.
-        cache (int or str, optional): Size of read cache in megabytes.
-        minlength (int or str, optional): Minimum title length in
-            seconds.
-        progress_handler (Callable, optional): A callback function to parse
-            progress updates. See :func:`makemkv.ProgressParser.parse_progress`
-            for details.
-    """
+
+class MakeMKV:
+    """Wraps makemkvcon and exposes makemkvcon's commands as methods."""
 
     def __init__(
         self,
-        input: Union[int, str, Path],
-        cache: Optional[Union[int, str]] = None,
-        minlength: Optional[Union[int, str]] = None,
-        progress_handler: Callable[[str, int, int], None] = lambda *a: None,
-    ):
-        self.input = self._parse_input(input)
+        input: int | str | PathLike[str],
+        cache: int | str | None = None,
+        minlength: int | str | None = None,
+        progress_handler: ProgressUpdateHandlerType = _do_nothing,
+    ) -> None:
+        """Initialize MakeMKV with input.
+
+        Args:
+            input: Can be either a disc number starting with 0, a device,
+                a .IFO file or a VIDEO_TS folder.
+            cache: Size of read cache in megabytes.
+            minlength: Minimum title length in seconds.
+            progress_handler: A callback function to parse progress updates.
+                See :func:`makemkv.ProgressParser.parse_progress`
+                for an example.
+        """
+        self._input = self._parse_input(input)
         self.cache = cache
         self.minlength = minlength
-        self.progress_handler: Callable[
-            [str, int, int], None
-        ] = progress_handler
-        self.process: Optional[Popen] = None
+        self.progress_handler = progress_handler
+        self.process: Popen | None = None
 
     def info(
         self,
-        cache: Optional[Union[int, str]] = None,
-        minlength: Optional[Union[int, str]] = None,
-    ) -> dict[str, Union[str, int, dict, list]]:
+        cache: int | str | None = None,
+        minlength: int | str | None = None,
+    ) -> MakeMKVOutput:
         """Display information about a disc.
 
         Args:
-            cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in seconds.
+            cache: Size of read cache in megabytes.
+            minlength: Minimum title length in seconds.
 
         Returns:
-            dict: A dict containing detailed information about drives, discs,
-            titles and streams.
-        """
+            MakeMKVOutput: A dict containing some information about drives,
+                discs, titles and streams.
 
+        Raises:
+            MakeMKVError: MakeMKV encountered a critical problem.
+        """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
             "makemkvcon",
             "info",
-            self.input,
+            self._input,
             "--robot",
             "--progress=-same",
             "--noscan",
@@ -79,32 +97,33 @@ class MakeMKV:
 
     def mkv(
         self,
-        title: Union[int, str],
-        output_dir: Union[str, Path],
-        cache: Optional[Union[int, str]] = None,
-        minlength: Optional[Union[int, str]] = None,
-    ) -> dict[str, Union[str, int, dict, list]]:
+        title: int | str,
+        output_dir: str | Path,
+        cache: int | str | None = None,
+        minlength: int | str | None = None,
+    ) -> MakeMKVOutput:
         """Copy titles from disc.
 
         Args:
-            title (int or str): Title to be ripped, can be either an integer
-                starting with 0 or the keyword "all".
-            output_dir (pathlib.Path or str): Output directory for created
-                mkv files.
-            cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in seconds.
+            title: Title to be ripped, can be either an integer starting
+                with 0 or the keyword "all".
+            output_dir: Output directory for created mkv files.
+            cache: Size of read cache in megabytes.
+            minlength: Minimum title length in seconds.
 
         Returns:
-            dict: A dict containing some information about drives, discs,
-            titles and streams.
-        """
+            MakeMKVOutput: A dict containing some information about drives,
+                discs, titles and streams.
 
+        Raises:
+            MakeMKVError: MakeMKV encountered a critical problem.
+        """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
             "makemkvcon",
             "mkv",
-            self.input,
+            self._input,
             str(title),
             str(output_dir),
             "--robot",
@@ -120,31 +139,32 @@ class MakeMKV:
 
     def backup(
         self,
-        output_dir: Union[str, Path],
-        cache: Optional[Union[int, str]] = None,
-        minlength: Optional[Union[int, str]] = None,
+        output_dir: str | Path,
+        cache: int | str | None = None,
+        minlength: int | str | None = None,
         decrypt: bool = False,
-    ) -> dict[str, Union[str, int, dict, list]]:
+    ) -> MakeMKVOutput:
         """Backup whole disc.
 
         Args:
-            output_dir (pathlib.Path or str): Output directory for created
-                backup files.
-            cache (int or str, optional): Size of read cache in megabytes.
-            minlength (int or str, optional): Minimum title length in seconds.
-            decrypt (bool, optional): Decrypt stream files during backup.
+            output_dir: Output directory for created backup files.
+            cache: Size of read cache in megabytes.
+            minlength: Minimum title length in seconds.
+            decrypt: Decrypt stream files during backup.
 
         Returns:
-            dict: A dict containing some information about drives, discs,
-            titles and streams.
-        """
+            MakeMKVOutput: A dict containing some information about drives,
+                discs, titles and streams.
 
+        Raises:
+            MakeMKVError: MakeMKV encountered a critical problem.
+        """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
             "makemkvcon",
             "backup",
-            self.input,
+            self._input,
             str(output_dir),
             "--robot",
             "--progress=-same",
@@ -159,33 +179,17 @@ class MakeMKV:
 
         return self._run(cmd)
 
-    def f(self, *args) -> dict[str, Union[str, int, dict, list]]:
-        """Run universal firmware tool.
-
-        Args:
-            args: Anything you want to append to the command.
-
-        Returns:
-            dict: A dict containing some information about drives, discs,
-            titles and streams.
-        """
-        cmd = ["makemkvcon", "f", *args]
-
-        return self._run(cmd)
-
     def kill(self) -> None:
         """Terminate the ``makemkvcon`` progress."""
         if self.process:
             self.process.kill()
 
-    def _parse_input(self, input: Union[int, str, Path]) -> str:
+    def _parse_input(self, input: int | str | PathLike[str]) -> str:
         """Autodetect suitable input type and reformat it for makemkvcon."""
-        if str(input).isdecimal():
+        if isinstance(input, int):
             return f"disc:{input}"
-        is_windows_drive = (
-            re.match(r"[A-Z]:(?:\\|/)?$", str(input)) is not None
-        )
-        input = Path(input)
+
+        input_path = Path(input)
 
         def is_video_ts_folder(path: Path) -> bool:
             return (
@@ -193,64 +197,66 @@ class MakeMKV:
                 and re.match(r"video[-_ ]?ts", path.name.lower()) is not None
             )
 
-        if input.is_block_device() or is_windows_drive:
-            return f"dev:{input}"
-        if input.suffix.lower() == ".iso":
-            return f"iso:{input}"
-        if input.suffix.lower() == ".ifo":
-            return f"file:{input.parent}"
-        if not is_video_ts_folder(input):
-            for path in input.iterdir():
+        if (
+            input_path.is_block_device()
+            or isinstance(input_path, WindowsPath)
+            and str(input_path) in (input_path.drive, input_path.anchor)
+        ):
+            return f"dev:{input_path}"
+        if input_path.suffix.lower() == ".iso":
+            return f"iso:{input_path}"
+        if input_path.suffix.lower() == ".ifo":
+            return f"file:{input_path.parent}"
+        if not is_video_ts_folder(input_path):
+            for path in input_path.iterdir():
                 if is_video_ts_folder(path):
                     return f"file:{path}"
-        return f"file:{input}"
+        return f"file:{input_path}"
 
     def _translate_codes(
-        self, flag: str, id: int, value: str, code: Optional[int] = None
-    ) -> dict[str, str]:
-        """Translate makemkvcon's message ids and special codes
-        to human readable strings"""
-        key = KEY_CODES.get(id)
-        if key:
-            if flag == "SINFO":
-                if id == 2:
-                    # "downmix" seems to be more suitable
-                    # for audiostreams than "name"
-                    key = "downmix"
-                elif id == 3:
-                    # convert 3-letter language codes to 2-letter codes
-                    value = Lang(value).pt1
+        self, flag: str, id: int, value: str, code: int
+    ) -> tuple[str, str | int]:
+        """Translate makemkvcon's codes into something useful.
 
-            if code:
-                value = SPECIAL_VALUES.get(code)
-            elif value.isdecimal():
-                value = int(value)
-            else:
-                value = value.strip()
+        Raises:
+            KeyError: if `id` is unknown or irrelevant
+        """
+        return_value: int | str
+        key = KEY_CODES[id]
+        if flag == "SINFO":
+            if id == 2:
+                # "downmix" seems to be more suitable
+                # for audiostreams than "name"
+                key = "downmix"
+            elif id == 3:
+                # convert 3-letter language codes to 2-letter codes
+                value = Lang(value).pt1
 
-            return {key: value}
+        if code:
+            return_value = SPECIAL_VALUES.get(code, value)
+        elif value.strip('"').isdecimal():
+            return_value = int(value.strip('"'))
         else:
-            return {}
+            return_value = value.strip()
 
-    def _run(self, cmd: list[str]) -> dict[str, Union[str, int, dict, list]]:
+        return key, return_value
+
+    def _run(self, cmd: list[str]) -> MakeMKVOutput:
         """Run makemkvcon and parse its output."""
         try:
-            p = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True)
-        except FileNotFoundError:
-            logger.critical(
+            p = self.process = Popen(
+                cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True
+            )
+        except FileNotFoundError as exc:
+            raise FileNotFoundError(
                 "Couldn't find makemkvcon."
                 "Make sure it is installed and in your PATH."
-            )
-            return {}
+            ) from exc
         self.progress = p
         logger.info('Running "%s"', " ".join(cmd))
-        output: dict[str, Union[str, int, dict, list]] = {
-            "drives": [],
-            "title_count": None,
-            "disc": {},
-            "titles": [],
-        }
+        output = MakeMKVOutput(drives=[], titles=[])
         progress_title = ""
+        assert p.stdout is not None
         for line in p.stdout:
             # flag, msg = line.strip().split(':', 1)
             # msg_values = _split_values_exp.findall(msg)
@@ -271,11 +277,19 @@ class MakeMKV:
                 #            code.
                 #   paramX - parameter for message
 
-                code = int(msg_values[0])
-                message = msg_values[3]
+                try:
+                    code = int(msg_values[0])
+                    message = msg_values[3]
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
                 loglevel = MESSAGE_CODES.get(code, 10)
-                logger.log(loglevel, "%s (%s)", message, code)
+                makemkvcon_logger.log(loglevel, "%s (%s)", message, code)
+
+                if loglevel == logging.CRITICAL:
+                    p.kill()
+                    raise MakeMKVError(message)
 
             elif flag == "PRGT":
                 # PRGT:code,id,name
@@ -283,11 +297,15 @@ class MakeMKV:
                 # id - operation sub-id
                 # name - name string
 
-                code = int(msg_values[0])
-                message = msg_values[2]
+                try:
+                    code = int(msg_values[0])
+                    message = msg_values[2]
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
                 loglevel = MESSAGE_CODES.get(code, 10)
-                logger.log(loglevel, "%s (%s)", message, code)
+                makemkvcon_logger.log(loglevel, "%s (%s)", message, code)
 
             elif flag == "PRGC":
                 # PRGC:code,id,name
@@ -295,7 +313,11 @@ class MakeMKV:
                 #   id - operation sub-id
                 #   name - name string
 
-                progress_title = msg_values[2]
+                try:
+                    progress_title = msg_values[2]
+                except IndexError:
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
             elif flag == "PRGV":
                 # PRGV:current,total,max
@@ -303,8 +325,12 @@ class MakeMKV:
                 #   total - total progress value
                 #   max - maximum possible value for a progress bar, constant
 
-                current = int(msg_values[0])
-                max = int(msg_values[2])
+                try:
+                    current = int(msg_values[0])
+                    max = int(msg_values[2])
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
                 self.progress_handler(progress_title, current, max)
 
@@ -319,51 +345,59 @@ class MakeMKV:
                 #   disc name - disc name string
                 #   device path - device path string (not documented)
 
-                _, _, _, _, drive_name, disc_name, device_path = msg_values
+                try:
+                    _, _, _, _, drive_name, disc_name, device_path = msg_values
+                except ValueError:
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
                 if drive_name or disc_name or device_path:
-                    drive = {}
+                    drive = Drive()
                     if drive_name:
-                        drive.update(
-                            {
-                                "drive_name": drive_name,
-                            }
-                        )
+                        drive["drive_name"] = drive_name
                     if disc_name:
-                        drive.update(
-                            {
-                                "disc_name": disc_name,
-                            }
-                        )
+                        drive["disc_name"] = disc_name
                     if device_path:
-                        drive.update(
-                            {
-                                "device_path": device_path,
-                            }
-                        )
+                        drive["device_path"] = device_path
                     output["drives"].append(drive)
 
             elif flag == "TCOUNT":
                 # TCOUNT:count
                 #   count - titles count
+                try:
+                    count = int(msg_values[0])
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
-                count = int(msg_values[0])
-
-                output.update({"title_count": count})
+                output["title_count"] = count
 
             elif flag == "CINFO":
                 # CINFO:id,code,value
                 #   id - attribute id, see AP_ItemAttributeId in apdefs.h
                 #   code - message code if attribute value is a constant string
                 #   value - attribute value
+                try:
+                    id = int(msg_values[0])
+                    code = int(msg_values[1])
+                    value = msg_values[2]
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
-                id = int(msg_values[0])
-                code = int(msg_values[1])
-                value = msg_values[2]
+                if "disc" not in output:
+                    output["disc"] = Disc()
+                    assert "disc" in output
 
-                output["disc"].update(
-                    self._translate_codes(flag, id, value, code=code)
-                )
+                try:
+                    key, d_value = self._translate_codes(flag, id, value, code)
+                except KeyError:
+                    continue
+                if not _is_valid_typeddict_item(Disc, key, d_value):
+                    logger.error(f"Error while parsing '{line.strip()}'")
+                    continue
+
+                output["disc"][key] = d_value  # type: ignore [misc]
 
             elif flag == "TINFO":
                 # TINFO:disc_nr,title_nr,id,code,value (wrong documented)
@@ -372,16 +406,28 @@ class MakeMKV:
                 #   code - message code if attribute value is a constant string
                 #   value - attribute value
 
-                title_nr = int(msg_values[0])
-                id = int(msg_values[1])
-                code = int(msg_values[2])
-                value = msg_values[3]
+                try:
+                    title_nr = int(msg_values[0])
+                    id = int(msg_values[1])
+                    code = int(msg_values[2])
+                    value = msg_values[3]
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
-                if title_nr >= len(output["titles"]):
-                    output["titles"].append({"streams": []})
-                output["titles"][title_nr].update(
-                    self._translate_codes(flag, id, value, code=code)
-                )
+                while title_nr >= len(output["titles"]):
+                    output["titles"].append(Title(streams=[]))
+
+                try:
+                    key, d_value = self._translate_codes(flag, id, value, code)
+                except KeyError:
+                    continue
+
+                if not _is_valid_typeddict_item(Title, key, d_value):
+                    logger.error(f"Error while parsing '{line.strip()}'")
+                    continue
+
+                output["titles"][title_nr][key] = d_value  # type:ignore [misc]
 
             elif flag == "SINFO":
                 # SINFO:disc_nr,title_nr,stream_nr,id,code,value
@@ -392,21 +438,50 @@ class MakeMKV:
                 #   code - message code if attribute value is a constant string
                 #   value - attribute value
 
-                title_nr = int(msg_values[0])
-                stream_nr = int(msg_values[1])
-                id = int(msg_values[2])
-                code = int(msg_values[3])
-                value = msg_values[4]
+                try:
+                    title_nr = int(msg_values[0])
+                    stream_nr = int(msg_values[1])
+                    id = int(msg_values[2])
+                    code = int(msg_values[3])
+                    value = msg_values[4]
+                except (ValueError, IndexError):
+                    logger.exception(f"Error while parsing '{line.strip()}'")
+                    continue
 
-                if stream_nr >= len(output["titles"][title_nr]["streams"]):
-                    output["titles"][title_nr]["streams"].append({})
-                output["titles"][title_nr]["streams"][stream_nr].update(
-                    self._translate_codes(flag, id, value, code=code)
-                )
+                while stream_nr >= len(output["titles"][title_nr]["streams"]):
+                    output["titles"][title_nr]["streams"].append(Stream())
+
+                try:
+                    key, d_value = self._translate_codes(flag, id, value, code)
+                except KeyError:
+                    continue
+
+                if not _is_valid_typeddict_item(Stream, key, d_value):
+                    logger.error(f"Error while parsing '{line.strip()}'")
+                    continue
+
+                output["titles"][title_nr]["streams"][stream_nr][key] = d_value  # type: ignore [misc] # noqa:E501
             else:
-                # Usage Errors etc.
+                logger.error(f"Error while parsing '{line.strip()}'")
 
-                logger.error(line.strip())
-
-        p.wait()
+        if (return_code := p.wait()) != 0:
+            raise MakeMKVError(
+                f"makemkvcon exited with non-zero return code {return_code}"
+            )
         return output
+
+
+def _is_valid_typeddict_item(
+    td: type[TypedDict], key: str, value: Any  # type: ignore [valid-type]
+) -> bool:
+    """Check if `key` and `value` form a valid item for the TypedDict `td`."""
+    annotations = get_type_hints(td)
+    if key not in annotations:
+        return False
+    if get_origin(annotations[key]) is Literal:
+        return value in get_args(annotations[key])
+    return isinstance(value, annotations[key])
+
+
+class MakeMKVError(Exception):
+    """Raised if MakeMKV encounters a critical problem."""

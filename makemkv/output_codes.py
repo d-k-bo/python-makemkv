@@ -1,33 +1,39 @@
-from logging import DEBUG, ERROR, INFO, WARNING
+"""This module provides more information about makemkvcon's codes.
+
+It includes mappings for message ids to loglevels and mappings for
+codes to human readable strings.
+"""
+
+from logging import CRITICAL, DEBUG, ERROR, INFO, WARNING
 
 KEY_CODES = {
-    1: 'type',
-    2: 'name',
-    3: 'langcode',
-    4: 'language',
-    5: 'codec',
-    8: 'chapter_count',
-    9: 'length',
-    10: 'size_human',
-    11: 'size',
-    13: 'bitrate',
-    15: 'video_angle',
-    17: 'samplerate',
-    19: 'dimensions',
-    20: 'aspect_ratio',
-    21: 'framerate',
-    27: 'file_output',
-    30: 'information',
+    1: "type",
+    2: "name",
+    3: "langcode",
+    4: "language",
+    5: "codec",
+    8: "chapter_count",
+    9: "length",
+    10: "size_human",
+    11: "size",
+    13: "bitrate",
+    15: "video_angle",
+    17: "samplerate",
+    19: "dimensions",
+    20: "aspect_ratio",
+    21: "framerate",
+    27: "file_output",
+    30: "information",
 }
 
 SPECIAL_VALUES = {
-    6201: 'video',
-    6202: 'audio',
-    6203: 'subtitles',
-    6206: 'DVD',
-    6209: 'BD',
-    6212: 'HDDVD',
-    6213: 'MKV',
+    6201: "video",
+    6202: "audio",
+    6203: "subtitles",
+    6206: "DVD",
+    6209: "BD",
+    6212: "HDDVD",
+    6213: "MKV",
 }
 
 # Loglevel for each messsage from makemkvcon
@@ -254,7 +260,7 @@ MESSAGE_CODES = {
     5007: ERROR,
     5008: ERROR,
     5009: ERROR,
-    5010: ERROR,
+    5010: CRITICAL,
     5011: INFO,
     5012: INFO,
     5013: WARNING,
