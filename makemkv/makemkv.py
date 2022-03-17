@@ -397,7 +397,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["disc"][key] = d_value  # type: ignore [misc]
+                output["disc"][key] = d_value  # type: ignore[literal-required] # noqa:E501
 
             elif flag == "TINFO":
                 # TINFO:disc_nr,title_nr,id,code,value (wrong documented)
@@ -427,7 +427,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["titles"][title_nr][key] = d_value  # type:ignore [misc]
+                output["titles"][title_nr][key] = d_value  # type: ignore[literal-required] # noqa:E501
 
             elif flag == "SINFO":
                 # SINFO:disc_nr,title_nr,stream_nr,id,code,value
@@ -460,7 +460,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["titles"][title_nr]["streams"][stream_nr][key] = d_value  # type: ignore [misc] # noqa:E501
+                output["titles"][title_nr]["streams"][stream_nr][key] = d_value  # type: ignore[literal-required] # noqa:E501
             else:
                 logger.error(f"Error while parsing '{line.strip()}'")
 
