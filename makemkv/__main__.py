@@ -26,7 +26,7 @@ from ._cli_params import (
     MKVCliParams,
     add_params,
 )
-from .makemkv import MakeMKV
+from .makemkv import MakeMKV, MakeMKVError
 from .progress import ProgressParser
 from .types import MakeMKVOutput, ProgressUpdateHandlerType
 
@@ -68,6 +68,8 @@ def info(**_params: Any) -> None:
             logger.warning("Received CTRL-C signal. Terminating makemkvcon.")
             makemkv.kill()
             raise
+        except MakeMKVError:
+            raise click.Abort
 
     return_info(disc_info, params)
 
@@ -88,6 +90,8 @@ def mkv(**_params: Any) -> None:
             logger.warning("Received CTRL-C signal. Terminating makemkvcon.")
             makemkv.kill()
             raise
+        except MakeMKVError:
+            raise click.Abort
 
     return_info(disc_info, params)
 
@@ -110,6 +114,8 @@ def backup(**_params: Any) -> None:
             logger.warning("Received CTRL-C signal. Terminating makemkvcon.")
             makemkv.kill()
             raise
+        except MakeMKVError:
+            raise click.Abort
 
     return_info(disc_info, params)
 
