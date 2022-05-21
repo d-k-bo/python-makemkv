@@ -9,6 +9,13 @@ def format(session: nox.Session) -> None:
 
 
 @nox.session
+def check_format(session: nox.Session):
+    session.install("black", "isort")
+    session.run("isort", ".", "--check")
+    session.run("black", ".", "--check")
+
+
+@nox.session
 def lint(session: nox.Session) -> None:
     session.install(
         "pyproject-flake8",
