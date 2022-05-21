@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+import platform
 import re
+import shutil
 from os import PathLike
 from pathlib import Path, WindowsPath
 from subprocess import PIPE, STDOUT, Popen
@@ -21,6 +23,15 @@ from .types import (
     Stream,
     Title,
 )
+
+if platform.system() == "Windows":
+    MAKEMKVCON_BINARIES = [
+        "makemkvcon",
+        str(WindowsPath("C:/Program Files/MakeMKV/makemkvcon.exe")),
+        str(WindowsPath("C:/Program Files (x86)/MakeMKV/makemkvcon.exe")),
+    ]
+else:
+    MAKEMKVCON_BINARIES = ["makemkvcon"]
 
 logger = logging.getLogger(__package__)
 makemkvcon_logger = logger.getChild("makemkvcon")
@@ -77,11 +88,12 @@ class MakeMKV:
 
         Raises:
             MakeMKVError: MakeMKV encountered a critical problem.
+            FileNotFoundError: Couldn't find `makemkvcon`.
         """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
-            "makemkvcon",
+            _find_makemkvcon_binary(),
             "info",
             self._input,
             "--robot",
@@ -117,11 +129,12 @@ class MakeMKV:
 
         Raises:
             MakeMKVError: MakeMKV encountered a critical problem.
+            FileNotFoundError: Couldn't find `makemkvcon`.
         """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
-            "makemkvcon",
+            _find_makemkvcon_binary(),
             "mkv",
             self._input,
             str(title),
@@ -158,11 +171,12 @@ class MakeMKV:
 
         Raises:
             MakeMKVError: MakeMKV encountered a critical problem.
+            FileNotFoundError: Couldn't find `makemkvcon`.
         """
         cache = self.cache if cache is None else cache
         minlength = self.minlength if minlength is None else minlength
         cmd = [
-            "makemkvcon",
+            _find_makemkvcon_binary(),
             "backup",
             self._input,
             str(output_dir),
@@ -180,7 +194,7 @@ class MakeMKV:
         return self._run(cmd)
 
     def kill(self) -> None:
-        """Terminate the ``makemkvcon`` progress."""
+        """Terminate the `makemkvcon` progress."""
         if self.process:
             self.process.kill()
 
@@ -243,16 +257,9 @@ class MakeMKV:
 
     def _run(self, cmd: list[str]) -> MakeMKVOutput:
         """Run makemkvcon and parse its output."""
-        try:
-            p = self.process = Popen(
-                cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True
-            )
-        except FileNotFoundError as exc:
-            raise FileNotFoundError(
-                "Couldn't find makemkvcon."
-                "Make sure it is installed and in your PATH."
-            ) from exc
-        self.progress = p
+        p = self.process = Popen(
+            cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True
+        )
         logger.info('Running "%s"', " ".join(cmd))
         output = MakeMKVOutput(drives=[], titles=[])
         progress_title = ""
@@ -481,6 +488,17 @@ def _is_valid_typeddict_item(
     if get_origin(annotations[key]) is Literal:
         return value in get_args(annotations[key])
     return isinstance(value, annotations[key])
+
+
+def _find_makemkvcon_binary() -> str:
+    for bin_path in MAKEMKVCON_BINARIES:
+        if shutil.which(bin_path) is not None:
+            return bin_path
+    else:
+        raise FileNotFoundError(
+            "Couldn't find makemkvcon. "
+            "Make sure it is installed and in your PATH."
+        )
 
 
 class MakeMKVError(Exception):

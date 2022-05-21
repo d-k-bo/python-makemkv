@@ -13,7 +13,7 @@ try:
 except ImportError as exc:
     raise ImportError(
         "pymakemkv requires 'rich' and 'click' to be installed. You can "
-        "install them with 'pip install rich' or 'pip install makemkv[cli]."
+        "install them with 'pip install rich click' or 'pip install makemkv[cli].'"
     ) from exc
 
 from ._cli_params import (
@@ -69,7 +69,10 @@ def info(**_params: Any) -> None:
             makemkv.kill()
             raise
         except MakeMKVError:
-            raise click.Abort
+            raise click.Abort from None
+        except FileNotFoundError as exc:
+            logger.critical(exc)
+            raise click.Abort from None
 
     return_info(disc_info, params)
 
@@ -91,7 +94,10 @@ def mkv(**_params: Any) -> None:
             makemkv.kill()
             raise
         except MakeMKVError:
-            raise click.Abort
+            raise click.Abort from None
+        except FileNotFoundError as exc:
+            logger.critical(exc)
+            raise click.Abort from None
 
     return_info(disc_info, params)
 
@@ -115,7 +121,10 @@ def backup(**_params: Any) -> None:
             makemkv.kill()
             raise
         except MakeMKVError:
-            raise click.Abort
+            raise click.Abort from None
+        except FileNotFoundError as exc:
+            logger.critical(exc)
+            raise click.Abort from None
 
     return_info(disc_info, params)
 
