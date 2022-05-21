@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > :warning: Major version zero (0.y.z) is for initial development. Anything MAY change at any time. The public API SHOULD NOT be considered stable.
 
+## [0.2.2]
+
+### Changed
+
+- Windows: find `makemkvcon.exe` if it's installed at its default location
+- CLI: Hide exception traceback
+
 ## [0.2.1]
 
 ### Added
@@ -44,5 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `MakeMKV.f()` / universal firmware tool support
 
+[0.2.2]: https://github.com/d-k-bo/python-makemkv/compare/tag/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/d-k-bo/python-makemkv/compare/tag/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/d-k-bo/python-makemkv/releases/tag/v0.2.0
