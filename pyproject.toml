@@ -47,35 +47,24 @@ dependencies = ["iso639-lang >= 2.0.0", "typing-extensions >= 4.0"]
 [tool]
 
     [tool.black]
-    line-length = 79
 
     [tool.isort]
     profile = "black"
-    line_length = 79
 
     [tool.mypy]
     show_error_codes = true
     warn_unused_ignores = true
     exclude = ["venv/", ".nox/"]
 
-    [tool.flakeheaven]
-    format = "colored"
-    max_line_length = 79
-    exclude = ["venv/", ".nox/"]
-    show_source = true
-    docstring-convention = "google"
-
-        [tool.flakeheaven.plugins]
-        "flake8-*" = ["+*"]
-        flake8-annotations = ["+*", "-ANN10?"]
-        flake8-docstrings = ["-*"]
-        mccabe = ["+*"]
-        pycodestyle = ["+*", "-W503"]
-        pyflakes = ["+*"]
-        pylint = ["+*"]
-
-        [tool.flakeheaven.exceptions."makemkv/"]
-        flake8-docstrings = ["+*", "-D10?"]
-
-        [tool.flakeheaven.exceptions."makemkv/__init__.py"]
-        pyflakes = ["-F401"]
+    [tool.flake8]
+    # pip install pyproject-flake8 flake8-annotations flake8-bugbear flake8-docstrings
+    max-line-length = 88
+    extend-ignore = [
+        "E203",  # whitespace before ‘,’, ‘;’, or ‘:’ (incompatible with PEP8 and black)
+        "E501",  # line too long (to strict, use B950 instead)
+        "ANN10",  # Missing type annotation for self/cls
+        "D1", # Missing docstring
+    ]
+    extend-select = ["B950"]  # line too long    
+    docstring-convention = "google"  # flake8-docstrings
+    per-file-ignores = ["noxfile.py: D, ANN"]

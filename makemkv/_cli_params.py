@@ -41,9 +41,7 @@ class HelpfulGroup(click.Group):
 
         self.format_commands(ctx, formatter)
 
-    def format_usage(
-        self, ctx: click.Context, formatter: click.HelpFormatter
-    ) -> None:
+    def format_usage(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         formatter.write_usage(ctx.command_path, "COMMAND [OPTIONS]")
 
 
@@ -151,7 +149,7 @@ BACKUP_PARAMS = INFO_PARAMS + [_output_param, _decrypt_param]
 def add_params(params: list[click.Option]) -> Callable[[F], F]:
     def _add_params(func: F) -> F:
         params.reverse()
-        setattr(func, "__click_params__", params)
+        func.__click_params__ = params  # type: ignore[attr-defined]
         return func
 
     return _add_params

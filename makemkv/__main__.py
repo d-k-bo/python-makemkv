@@ -113,9 +113,7 @@ def backup(**_params: Any) -> None:
     with ProgressParser() as bar:
         makemkv = MakeMKV(**extract_makemkv_args(params, bar))
         try:
-            disc_info = makemkv.backup(
-                params["output"], decrypt=params["decrypt"]
-            )
+            disc_info = makemkv.backup(params["output"], decrypt=params["decrypt"])
         except KeyboardInterrupt:
             logger.warning("Received CTRL-C signal. Terminating makemkvcon.")
             makemkv.kill()
@@ -136,16 +134,13 @@ def set_log_level(params: InfoCliParams) -> None:
         logger.setLevel(logging.CRITICAL)
 
 
-def extract_makemkv_args(
-    params: InfoCliParams, bar: ProgressParser
-) -> MakeMKVArgs:
+def extract_makemkv_args(params: InfoCliParams, bar: ProgressParser) -> MakeMKVArgs:
     makemkv_args = MakeMKVArgs()
     input = makemkv_args["input"] = (
         params["input"] if params["input"] else params["disc_nr"]
     )
     logger.debug(
-        f"input: {params['input']}, disc_nr: {params['disc_nr']} "
-        f"-> {input}"
+        f"input: {params['input']}, disc_nr: {params['disc_nr']} " f"-> {input}"
     )
     if not params["no_bar"] and not params["quiet"]:
         makemkv_args["progress_handler"] = bar.parse_progress
@@ -212,10 +207,7 @@ class MakeMKVOutputTree:
         data: NestedDict,
         parent_tree: Tree,
     ) -> None:
-        data = {
-            key: value
-            for key, value in sorted(data.items(), key=lambda x: x[0])
-        }
+        data = {key: value for key, value in sorted(data.items(), key=lambda x: x[0])}
         for key, value in data.items():
             key = key.replace("_", " ").capitalize()
             if isinstance(value, str):

@@ -15,14 +15,7 @@ from iso639 import Lang  # type: ignore [import]
 from typing_extensions import TypedDict, get_args, get_origin, get_type_hints
 
 from .output_codes import KEY_CODES, MESSAGE_CODES, SPECIAL_VALUES
-from .types import (
-    Disc,
-    Drive,
-    MakeMKVOutput,
-    ProgressUpdateHandlerType,
-    Stream,
-    Title,
-)
+from .types import Disc, Drive, MakeMKVOutput, ProgressUpdateHandlerType, Stream, Title
 
 if platform.system() == "Windows":
     MAKEMKVCON_BINARIES = [
@@ -35,9 +28,7 @@ else:
 
 logger = logging.getLogger(__package__)
 makemkvcon_logger = logger.getChild("makemkvcon")
-_split_msg_exp = re.compile(
-    r'[A-Z]+(?=:)|(?<=,")[^"]*(?=")|(?!:)[^,"]+|(?<=,)(?=,)'
-)
+_split_msg_exp = re.compile(r'[A-Z]+(?=:)|(?<=,")[^"]*(?=")|(?!:)[^,"]+|(?<=,)(?=,)')
 
 
 def _do_nothing(*args: Any, **kwargs: Any) -> None:
@@ -257,9 +248,7 @@ class MakeMKV:
 
     def _run(self, cmd: list[str]) -> MakeMKVOutput:
         """Run makemkvcon and parse its output."""
-        p = self.process = Popen(
-            cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True
-        )
+        p = self.process = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True)
         logger.info('Running "%s"', " ".join(cmd))
         output = MakeMKVOutput(drives=[], titles=[])
         progress_title = ""
@@ -496,8 +485,7 @@ def _find_makemkvcon_binary() -> str:
             return bin_path
     else:
         raise FileNotFoundError(
-            "Couldn't find makemkvcon. "
-            "Make sure it is installed and in your PATH."
+            "Couldn't find makemkvcon. Make sure it is installed and in your PATH."
         )
 
 

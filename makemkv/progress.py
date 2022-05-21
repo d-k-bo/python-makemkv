@@ -34,9 +34,7 @@ class ProgressParser(Progress):
 
         return self
 
-    def parse_progress(
-        self, task_description: str, progress: int, max: int
-    ) -> None:
+    def parse_progress(self, task_description: str, progress: int, max: int) -> None:
         """Update the progress bar display.
 
         Args:

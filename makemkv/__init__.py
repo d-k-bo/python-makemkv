@@ -1,14 +1,7 @@
 """python-makemkv is a simple python wrapper for MakeMKV."""
 
 from .makemkv import MakeMKV, MakeMKVError
-from .types import (
-    Disc,
-    Drive,
-    MakeMKVOutput,
-    ProgressUpdateHandlerType,
-    Stream,
-    Title,
-)
+from .types import Disc, Drive, MakeMKVOutput, ProgressUpdateHandlerType, Stream, Title
 
 __all__ = [
     "Disc",
@@ -22,7 +15,7 @@ __all__ = [
 ]
 
 try:
-    from .progress import ProgressParser
+    from .progress import ProgressParser  # noqa: F401
 except ImportError:
     pass
 else:

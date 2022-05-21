@@ -10,8 +10,13 @@ def format(session: nox.Session) -> None:
 
 @nox.session
 def lint(session: nox.Session) -> None:
-    session.install("flakeheaven", "flake8-annotations", "flake8-docstrings")
-    session.run("flakeheaven", "lint")
+    session.install(
+        "pyproject-flake8",
+        "flake8-annotations",
+        "flake8-bugbear",
+        "flake8-docstrings",
+    )
+    session.run("pflake8", "makemkv/", "noxfile.py")
 
 
 @nox.session
