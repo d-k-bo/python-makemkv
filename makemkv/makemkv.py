@@ -246,17 +246,16 @@ class MakeMKV:
 
         return key, return_value
 
-    def _run(self, cmd: list[str]) -> MakeMKVOutput:
-        """Run makemkvcon and parse its output."""
-        p = self.process = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True)
-        logger.info('Running "%s"', " ".join(cmd))
+    def _parse_makemkv(self,lines):
         output = MakeMKVOutput(drives=[], titles=[])
         progress_title = ""
-        assert p.stdout is not None
-        for line in p.stdout:
+
+        for line in lines:
             # flag, msg = line.strip().split(':', 1)
             # msg_values = _split_values_exp.findall(msg)
             # msg_values = [v.strip('"').strip() for v in msg_values]
+            if line == '':
+                continue
             flag: str
             msg_values: list[str]
             flag, *msg_values = _split_msg_exp.findall(line.strip())
@@ -460,6 +459,15 @@ class MakeMKV:
             else:
                 logger.error(f"Error while parsing '{line.strip()}'")
 
+        return output
+
+    def _run(self, cmd: list[str]) -> MakeMKVOutput:
+        """Run makemkvcon and parse its output."""
+        p = self.process = Popen(cmd, stderr=STDOUT, stdout=PIPE, bufsize=1, text=True)
+        logger.info('Running "%s"', " ".join(cmd))
+        assert p.stdout is not None
+
+        output = self._parse_makemkv(p.stdout)
         if (return_code := p.wait()) != 0:
             raise MakeMKVError(
                 f"makemkvcon exited with non-zero return code {return_code}"

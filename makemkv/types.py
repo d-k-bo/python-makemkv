@@ -48,6 +48,7 @@ class Title(TypedDict, total=False):
     information: str
     length: str  # hh:mm:ss
     size_human: str  # eg. "5.9 GB"
+    segment_map: str  # eg. "500.mpl"
     size: int  # bytes
     streams: Required[list[Stream]]
 

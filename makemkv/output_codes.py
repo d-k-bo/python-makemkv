@@ -18,6 +18,7 @@ KEY_CODES = {
     11: "size",
     13: "bitrate",
     15: "video_angle",
+    16: "segment_map",
     17: "samplerate",
     19: "dimensions",
     20: "aspect_ratio",
