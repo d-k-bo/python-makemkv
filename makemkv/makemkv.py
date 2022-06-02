@@ -246,7 +246,7 @@ class MakeMKV:
 
         return key, return_value
 
-    def _parse_makemkv(self,lines):
+    def _parse_makemkv(self, lines, p=None) -> dict:
         output = MakeMKVOutput(drives=[], titles=[])
         progress_title = ""
 
@@ -282,7 +282,7 @@ class MakeMKV:
                 loglevel = MESSAGE_CODES.get(code, 10)
                 makemkvcon_logger.log(loglevel, "%s (%s)", message, code)
 
-                if loglevel == logging.CRITICAL:
+                if loglevel == logging.CRITICAL and p !=None:
                     p.kill()
                     raise MakeMKVError(message)
 
@@ -467,7 +467,7 @@ class MakeMKV:
         logger.info('Running "%s"', " ".join(cmd))
         assert p.stdout is not None
 
-        output = self._parse_makemkv(p.stdout)
+        output = self._parse_makemkv(p.stdout, p)
         if (return_code := p.wait()) != 0:
             raise MakeMKVError(
                 f"makemkvcon exited with non-zero return code {return_code}"
