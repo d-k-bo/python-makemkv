@@ -9,7 +9,7 @@ import shutil
 from os import PathLike
 from pathlib import Path, WindowsPath
 from subprocess import PIPE, STDOUT, Popen
-from typing import Any, Literal
+from typing import Any, Iterable, Literal
 
 from iso639 import Lang  # type: ignore [import]
 from typing_extensions import TypedDict, get_args, get_origin, get_type_hints
