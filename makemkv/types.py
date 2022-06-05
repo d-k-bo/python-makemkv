@@ -47,6 +47,8 @@ class Title(TypedDict, total=False):
     file_output: str  # eg. "title_t00.mkv"
     information: str
     length: str  # hh:mm:ss
+    name: str  # eg. "title"
+    playlist_file: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
     streams: Required[list[Stream]]
