@@ -283,7 +283,7 @@ class MakeMKV:
                 makemkvcon_logger.log(loglevel, "%s (%s)", message, code)
 
                 if loglevel == logging.CRITICAL and self.process is not None:
-                    p.kill()
+                    self.process.kill()
                     raise MakeMKVError(message)
 
             elif flag == "PRGT":
