@@ -237,7 +237,7 @@ class MakeMKV:
                 # convert 3-letter language codes to 2-letter codes
                 value = Lang(value).pt1
 
-            if key is "framerate":
+            if key == "framerate":
                 # convert "##.### (#####/####)" to int string
                 if re.search("^\d+\.\d*\s\(\d+/\d+\)$", value):
                     value = value.split(" ")[0]
