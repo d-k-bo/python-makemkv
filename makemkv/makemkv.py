@@ -254,7 +254,7 @@ class MakeMKV:
             # flag, msg = line.strip().split(':', 1)
             # msg_values = _split_values_exp.findall(msg)
             # msg_values = [v.strip('"').strip() for v in msg_values]
-            if line == '':
+            if not line:
                 continue
             flag: str
             msg_values: list[str]
