@@ -29,6 +29,7 @@ else:
 logger = logging.getLogger(__package__)
 makemkvcon_logger = logger.getChild("makemkvcon")
 _split_msg_exp = re.compile(r'[A-Z]+(?=:)|(?<=,")[^"]*(?=")|(?!:)[^,"]+|(?<=,)(?=,)')
+keep_str = [26]
 
 
 def _do_nothing(*args: Any, **kwargs: Any) -> None:
@@ -245,7 +246,7 @@ class MakeMKV:
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
-        elif value.strip('"').isdecimal():
+        elif value.strip('"').isdecimal() and not id in keep_str:
             return_value = int(value.strip('"'))
         else:
             return_value = value.strip()
