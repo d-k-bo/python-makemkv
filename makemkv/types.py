@@ -45,6 +45,7 @@ class Stream(TypedDict, total=False):
     metadata_langcode: str  # eg. "eng"
     metadata_language: str  # eg. "English"
     samplerate: int  # eg. 48000,
+    stream_flags: int  # eg. 0
     type: Literal["video", "audio", "subtitles"]
     video_angle: int  # eg. 1
 
@@ -58,8 +59,8 @@ class Title(TypedDict, total=False):
     name: str  # eg. "title"
     metadata_langcode: str  # eg. "eng"
     metadata_language: str  # eg. "English"
-    segment_count: int  # eg. 5
-    segment_map: str  # eg. "174,175,175,175,448"
+    segments_count: int  # eg. 5
+    segments_map: str  # eg. "174,175,175,175,448"
     source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
