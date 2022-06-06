@@ -238,7 +238,7 @@ class MakeMKV:
                 value = Lang(value).pt1
 
             if key is "framerate":
-                # convert "##.### (#####/####)" to int string 
+                # convert "##.### (#####/####)" to int string
                 if re.search("^\d+\.\d*\s\(\d+/\d+\)$", value):
                     value = value.split(" ")[0]
                 value = str(round(float(value)))
