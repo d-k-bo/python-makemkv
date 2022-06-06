@@ -23,20 +23,27 @@ class Drive(TypedDict, total=False):
 
 class Disc(TypedDict, total=False):
     information: str
+    metadata_langcode: str  # eg. "eng"
+    metadata_language: str  # eg. "English"
     name: str
     type: Literal["DVD", "BD", "HDDVD", "MKV"]
+    volume_name: str
 
 
 class Stream(TypedDict, total=False):
     aspect_ratio: str  # eg. "16:9"
     bitrate: str  # eg. "384 Kb/s"
-    codec: str  # eg. "V_MPEG2", "A_AC3", "S_VOBSUB"
+    codec_id: str  # eg. "V_MPEG2", "A_AC3", "S_VOBSUB"
+    codec_long: str  # eg. "Mpeg4 AVC High@L4.1"
+    codec_short: str  # eg. "Mpeg4"
     dimensions: str  # eg. "720x576",
     downmix: str  # eg. "Surround 5.1"
     framerate: int  # eg. 25
     information: str  # eg. "DD Surround 5.1 English"
     langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     language: str  # eg. "English"
+    metadata_langcode: str  # eg. "eng"
+    metadata_language: str  # eg. "English"
     samplerate: int  # eg. 48000,
     type: Literal["video", "audio", "subtitles"]
     video_angle: int  # eg. 1
@@ -44,11 +51,16 @@ class Stream(TypedDict, total=False):
 
 class Title(TypedDict, total=False):
     chapter_count: int
+    comment: str
     file_output: str  # eg. "title_t00.mkv"
     information: str
     length: str  # hh:mm:ss
     name: str  # eg. "title"
-    playlist_file: str  # eg. "00021.mpls"
+    metadata_langcode: str  # eg. "eng"
+    metadata_language: str  # eg. "English"
+    segment_count: int  # eg. 5
+    segment_map: str  # eg. "174,175,175,175,448"
+    source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
     streams: Required[list[Stream]]
