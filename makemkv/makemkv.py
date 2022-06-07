@@ -246,6 +246,12 @@ class MakeMKV:
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
+        elif key == "framerate":
+            # convert "##.### (#####/####)" to int string
+            if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
+                return_value = Decimal(m[1])
+            else:
+                return_value = int(value)
         elif value.strip('"').isdecimal() and not id in keep_str:
             return_value = int(value.strip('"'))
         else:
