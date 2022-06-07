@@ -246,7 +246,7 @@ class MakeMKV:
                 return_value = Decimal(m[1])
             else:
                 return_value = int(value)
-        elif value.strip('"').isdecimal() and not id in keep_str:
+        elif value.strip('"').isdecimal():
             return_value = int(value.strip('"'))
         else:
             return_value = value.strip()
