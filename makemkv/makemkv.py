@@ -235,12 +235,12 @@ class MakeMKV:
                 # "downmix" seems to be more suitable
                 # for audiostreams than "name"
                 key = "downmix"
-            elif id == 3:
-                # convert 3-letter language codes to 2-letter codes
-                value = Lang(value).pt1
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
+        elif key in ["metadata_langcode", "langcode"]:
+            # convert 3-letter language codes to 2-letter codes
+            value = Lang(value).pt1
         elif key == "framerate":
             # convert "##.### (#####/####)" to int string
             if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
