@@ -1,12 +1,12 @@
 """Main module of python-makemkv that provides the `MakeMKV` class."""
 
 from __future__ import annotations
-from decimal import Decimal
 
 import logging
 import platform
 import re
 import shutil
+from decimal import Decimal
 from os import PathLike
 from pathlib import Path, WindowsPath
 from subprocess import PIPE, STDOUT, Popen
@@ -221,13 +221,13 @@ class MakeMKV:
 
     def _translate_codes(
         self, flag: str, id: int, value: str, code: int
-    ) -> tuple[str, str | int]:
+    ) -> tuple[str, str | int | Decimal | list[int]]:
         """Translate makemkvcon's codes into something useful.
 
         Raises:
             KeyError: if `id` is unknown or irrelevant
         """
-        return_value: int | str
+        return_value: str | int | Decimal | list[int]
         key = KEY_CODES[id]
         if flag == "SINFO":
             if id == 2:
@@ -239,7 +239,7 @@ class MakeMKV:
             return_value = SPECIAL_VALUES.get(code, value)
         elif key in ["metadata_langcode", "langcode"]:
             # convert 3-letter language codes to 2-letter codes
-            value = Lang(value).pt1
+            return_value = Lang(value).pt1
         elif key == "framerate":
             # convert "##.### (#####/####)" to int string
             if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
@@ -247,9 +247,9 @@ class MakeMKV:
             else:
                 return_value = int(value)
         elif key == "segments_map":
-            value = [int(i) for i in value.split(",")]
-        elif value.strip('"').isdecimal():
-            return_value = int(value.strip('"'))
+            return_value = [int(i) for i in value.split(",")]
+        elif value.isdecimal():
+            return_value = int(value)
         else:
             return_value = value.strip()
 
@@ -493,6 +493,10 @@ def _is_valid_typeddict_item(
         return False
     if get_origin(annotations[key]) is Literal:
         return value in get_args(annotations[key])
+    if get_origin(annotations[key]) is list:
+        return isinstance(value, list) and all(
+            isinstance(item, get_args(annotations[key])[0]) for item in value
+        )
     return isinstance(value, annotations[key])
 
 
