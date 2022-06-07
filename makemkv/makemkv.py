@@ -30,7 +30,6 @@ else:
 logger = logging.getLogger(__package__)
 makemkvcon_logger = logger.getChild("makemkvcon")
 _split_msg_exp = re.compile(r'[A-Z]+(?=:)|(?<=,")[^"]*(?=")|(?!:)[^,"]+|(?<=,)(?=,)')
-keep_str = [26]
 
 
 def _do_nothing(*args: Any, **kwargs: Any) -> None:
