@@ -1,4 +1,4 @@
-from typing import Literal, Protocol
+from typing import Iterable, Literal, Protocol
 
 from typing_extensions import Required, TypedDict
 
@@ -23,7 +23,7 @@ class Drive(TypedDict, total=False):
 
 class Disc(TypedDict, total=False):
     information: str
-    metadata_langcode: str  # eg. "eng"
+    metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     name: str
     type: Literal["DVD", "BD", "HDDVD", "MKV"]
@@ -42,7 +42,7 @@ class Stream(TypedDict, total=False):
     information: str  # eg. "DD Surround 5.1 English"
     langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     language: str  # eg. "English"
-    metadata_langcode: str  # eg. "eng"
+    metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     samplerate: int  # eg. 48000,
     stream_flags: int  # eg. 0
@@ -57,18 +57,18 @@ class Title(TypedDict, total=False):
     information: str
     length: str  # hh:mm:ss
     name: str  # eg. "title"
-    metadata_langcode: str  # eg. "eng"
+    metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     segments_count: int  # eg. 5
-    segments_map: str  # eg. "174,175,175,175,448"
+    segments_map: Iterable[int]  # eg. [174,175,175,175,448]
     source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
-    streams: Required[list[Stream]]
+    streams: Required[Iterable[Stream]]
 
 
 class MakeMKVOutput(TypedDict, total=False):
     disc: Disc
-    drives: Required[list[Drive]]
+    drives: Required[Iterable[Drive]]
     title_count: int
-    titles: Required[list[Title]]
+    titles: Required[Iterable[Title]]

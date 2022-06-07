@@ -246,6 +246,8 @@ class MakeMKV:
                 return_value = Decimal(m[1])
             else:
                 return_value = int(value)
+        elif key == "segments_map":
+            value = [int(i) for i in value.split(",")]
         elif value.strip('"').isdecimal():
             return_value = int(value.strip('"'))
         else:
