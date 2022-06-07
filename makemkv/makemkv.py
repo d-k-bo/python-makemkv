@@ -1,6 +1,7 @@
 """Main module of python-makemkv that provides the `MakeMKV` class."""
 
 from __future__ import annotations
+from decimal import Decimal
 
 import logging
 import platform
@@ -237,12 +238,6 @@ class MakeMKV:
             elif id == 3:
                 # convert 3-letter language codes to 2-letter codes
                 value = Lang(value).pt1
-
-            if key == "framerate":
-                # convert "##.### (#####/####)" to int string
-                if re.search("^\d+\.\d*\s\(\d+/\d+\)$", value):
-                    value = value.split(" ")[0]
-                value = str(round(float(value)))
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
