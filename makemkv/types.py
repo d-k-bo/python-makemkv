@@ -1,4 +1,4 @@
-from typing import Iterable, Literal, Protocol
+from typing import Literal, Protocol
 
 from typing_extensions import Required, TypedDict
 
@@ -60,15 +60,15 @@ class Title(TypedDict, total=False):
     metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     segments_count: int  # eg. 5
-    segments_map: Iterable[int]  # eg. [174,175,175,175,448]
+    segments_map: list[int]  # eg. [174,175,175,175,448]
     source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
-    streams: Required[Iterable[Stream]]
+    streams: Required[list[Stream]]
 
 
 class MakeMKVOutput(TypedDict, total=False):
     disc: Disc
-    drives: Required[Iterable[Drive]]
+    drives: Required[list[Drive]]
     title_count: int
-    titles: Required[Iterable[Title]]
+    titles: Required[list[Title]]
