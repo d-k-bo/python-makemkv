@@ -1,7 +1,6 @@
 """Main module of python-makemkv that provides the `MakeMKV` class."""
 
 from __future__ import annotations
-from decimal import Decimal
 
 import logging
 import platform
@@ -243,7 +242,7 @@ class MakeMKV:
         elif key == "framerate":
             # convert "##.### (#####/####)" to int string
             if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
-                return_value = Decimal(m[1])
+                return_value = float(m[1])
             else:
                 return_value = int(value)
         elif key == "segments_map":
