@@ -26,8 +26,6 @@ KEY_CODES = {
     20: "aspect_ratio",
     21: "framerate",
     22: "stream_flags",
-    23: "date_time",
-    24: "original_title_id",
     25: "segments_count",
     26: "segments_map",
     27: "file_output",
