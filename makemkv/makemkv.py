@@ -239,7 +239,7 @@ class MakeMKV:
             return_value = SPECIAL_VALUES.get(code, value)
         elif key in ["metadata_langcode", "langcode"]:
             # convert 3-letter language codes to 2-letter codes
-            value = Lang(value).pt1
+            return_value = Lang(value).pt1
         elif key == "framerate":
             # convert "##.### (#####/####)" to int string
             if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
@@ -247,7 +247,7 @@ class MakeMKV:
             else:
                 return_value = int(value)
         elif key == "segments_map":
-            value = [int(i) for i in value.split(",")]
+            return_value = [int(i) for i in value.split(",")]
         elif value.strip('"').isdecimal():
             return_value = int(value.strip('"'))
         else:
