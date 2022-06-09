@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Literal, Protocol
 
 from typing_extensions import Required, TypedDict
@@ -39,7 +40,7 @@ class Stream(TypedDict, total=False):
     codec_short: str  # eg. "Mpeg4"
     dimensions: str  # eg. "720x576",
     downmix: str  # eg. "Surround 5.1"
-    framerate: float  # eg. 25
+    framerate: int | Decimal  # eg. 25 or Decimal("23.976")
     information: str  # eg. "DD Surround 5.1 English"
     langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     language: str  # eg. "English"
@@ -61,7 +62,7 @@ class Title(TypedDict, total=False):
     metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     segments_count: int  # eg. 5
-    segments_map: list  # eg. [174,175,175,175,448]
+    segments_map: list[int]  # eg. [174,175,175,175,448]
     source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
