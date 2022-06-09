@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Literal, Protocol
+from typing import Literal, Protocol, Union
 
 from typing_extensions import Required, TypedDict
 
@@ -40,7 +40,7 @@ class Stream(TypedDict, total=False):
     codec_short: str  # eg. "Mpeg4"
     dimensions: str  # eg. "720x576",
     downmix: str  # eg. "Surround 5.1"
-    framerate: int | Decimal  # eg. 25 or Decimal("23.976")
+    framerate: Union[int, Decimal]  # eg. 25 or Decimal("23.976")
     information: str  # eg. "DD Surround 5.1 English"
     langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     language: str  # eg. "English"
