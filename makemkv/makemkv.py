@@ -245,6 +245,8 @@ class MakeMKV:
                 return_value = float(m[1])
             else:
                 return_value = int(value)
+        elif key == "segments_map":
+            return_value = value
         elif value.isdecimal():
             return_value = int(value)
         else:
