@@ -6,7 +6,6 @@ import logging
 import platform
 import re
 import shutil
-from decimal import Decimal
 from os import PathLike
 from pathlib import Path, WindowsPath
 from subprocess import PIPE, STDOUT, Popen
@@ -221,13 +220,13 @@ class MakeMKV:
 
     def _translate_codes(
         self, flag: str, id: int, value: str, code: int
-    ) -> tuple[str, str | int | Decimal | list[int]]:
+    ) -> tuple[str, str | int | float]:
         """Translate makemkvcon's codes into something useful.
 
         Raises:
             KeyError: if `id` is unknown or irrelevant
         """
-        return_value: str | int | Decimal | list[int]
+        return_value: str | int | float
         key = KEY_CODES[id]
         if flag == "SINFO":
             if id == 2:
@@ -243,11 +242,9 @@ class MakeMKV:
         elif key == "framerate":
             # convert "##.### (#####/####)" to int string
             if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
-                return_value = Decimal(m[1])
+                return_value = float(m[1])
             else:
                 return_value = int(value)
-        elif key == "segments_map":
-            return_value = [int(i) for i in value.split(",")]
         elif value.isdecimal():
             return_value = int(value)
         else:
@@ -493,6 +490,8 @@ def _is_valid_typeddict_item(
         return False
     if get_origin(annotations[key]) is Literal:
         return value in get_args(annotations[key])
+    if get_origin(annotations[key]) is Union:
+        return any(isinstance(value, tp) for tp in get_args(annotations[key]))
     if get_origin(annotations[key]) is list:
         return isinstance(value, list) and all(
             isinstance(item, get_args(annotations[key])[0]) for item in value
