@@ -46,7 +46,6 @@ class Stream(TypedDict, total=False):
     metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
     samplerate: int  # eg. 48000,
-    stream_flags: int  # eg. 0
     type: Literal["video", "audio", "subtitles"]
     video_angle: int  # eg. 1
 
