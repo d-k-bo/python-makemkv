@@ -1,5 +1,12 @@
 # python-makemkv
 
+[![PyPI](https://img.shields.io/pypi/v/makemkv.svg?logo=pypi)](https://pypi.python.org/pypi/makemkv)
+[![Python](https://img.shields.io/pypi/pyversions/makemkv.svg?logo=python)](https://pypi.python.org/pypi/makemkv)
+[![License](https://img.shields.io/pypi/l/makemkv.svg)](https://pypi.python.org/pypi/makemkv)
+[![Code Style](https://img.shields.io/badge/code%20style-black-black)](https://github.com/psf/black)
+[![CI](https://github.com/d-k-bo/python-makemkv/actions/workflows/ci.yml/badge.svg)](https://github.com/d-k-bo/python-makemkv/actions/workflows/ci.yml)
+[![Codecov](https://img.shields.io/codecov/c/github/d-k-bo/python-makemkv)](https://app.codecov.io/gh/d-k-bo/python-makemkv)
+
 python-makemkv is a simple python wrapper for [MakeMKV](https://www.makemkv.com/) (written by
 GuinpinSoft inc.). While it can be imported as a module, it also offers
 a command-line interface that tries to be more intuitive than
@@ -101,3 +108,15 @@ Commands:
   info    Display information about a disc.
   mkv     Copy titles from disc.
 ```
+
+## Contributing
+
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please use [nox](https://nox.thea.codes/en/stable/tutorial.html) to format, lint, type-check and test your code by calling `nox` in your project directory.
+
+## License
+
+This project is licensed under the MIT License.
+
+See [LICENSE](LICENSE) for more information.
