@@ -47,7 +47,6 @@ class Stream(TypedDict, total=False):
     metadata_language: str  # eg. "English"
     samplerate: int  # eg. 48000,
     type: Literal["video", "audio", "subtitles"]
-    video_angle: int  # eg. 1
 
 
 class Title(TypedDict, total=False):
@@ -59,12 +58,14 @@ class Title(TypedDict, total=False):
     name: str  # eg. "title"
     metadata_langcode: str  # two-letter ISO 639-1 code if it exists, eg. "en"
     metadata_language: str  # eg. "English"
+    original_title_id: int  # used on multi-angle discs, eg. 1
     segments_count: int  # eg. 5
     segments_map: str  # eg. "174,175,175,175,448" or "1,(2,4,6),11-22,23-44"
     source_filename: str  # eg. "00021.mpls"
     size_human: str  # eg. "5.9 GB"
     size: int  # bytes
     streams: Required[list[Stream]]
+    video_angle: int  # eg. 1
 
 
 class MakeMKVOutput(TypedDict, total=False):
