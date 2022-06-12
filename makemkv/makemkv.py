@@ -9,7 +9,7 @@ import shutil
 from os import PathLike
 from pathlib import Path, WindowsPath
 from subprocess import PIPE, STDOUT, Popen
-from typing import Any, Iterable, Literal
+from typing import Any, Iterable, Literal, Union
 
 from iso639 import Lang  # type: ignore [import]
 from typing_extensions import TypedDict, get_args, get_origin, get_type_hints
@@ -220,27 +220,35 @@ class MakeMKV:
 
     def _translate_codes(
         self, flag: str, id: int, value: str, code: int
-    ) -> tuple[str, str | int]:
+    ) -> tuple[str, str | int | float]:
         """Translate makemkvcon's codes into something useful.
 
         Raises:
             KeyError: if `id` is unknown or irrelevant
         """
-        return_value: int | str
+        return_value: str | int | float
         key = KEY_CODES[id]
         if flag == "SINFO":
             if id == 2:
                 # "downmix" seems to be more suitable
                 # for audiostreams than "name"
                 key = "downmix"
-            elif id == 3:
-                # convert 3-letter language codes to 2-letter codes
-                value = Lang(value).pt1
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
-        elif value.strip('"').isdecimal():
-            return_value = int(value.strip('"'))
+        elif key in ["metadata_langcode", "langcode"]:
+            # convert 3-letter language codes to 2-letter codes
+            return_value = Lang(value).pt1
+        elif key == "framerate":
+            # convert "##.### (#####/####)" to int string
+            if m := re.match(r"^(\d+(?:\.\d+)*)\s\(\d+/\d+\)$", value):
+                return_value = float(m[1])
+            else:
+                return_value = int(value)
+        elif key == "segments_map":
+            return_value = value
+        elif value.isdecimal():
+            return_value = int(value)
         else:
             return_value = value.strip()
 
@@ -484,6 +492,12 @@ def _is_valid_typeddict_item(
         return False
     if get_origin(annotations[key]) is Literal:
         return value in get_args(annotations[key])
+    if get_origin(annotations[key]) is Union:
+        return any(isinstance(value, tp) for tp in get_args(annotations[key]))
+    if get_origin(annotations[key]) is list:
+        return isinstance(value, list) and all(
+            isinstance(item, get_args(annotations[key])[0]) for item in value
+        )
     return isinstance(value, annotations[key])
 
 
