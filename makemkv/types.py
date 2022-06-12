@@ -12,7 +12,7 @@ class ProgressUpdateHandlerType(Protocol):
     def __call__(  # noqa: D102
         self, task_description: str, progress: int, max: int
     ) -> None:
-        ...
+        ...  # pragma: no cover
 
 
 class Drive(TypedDict, total=False):

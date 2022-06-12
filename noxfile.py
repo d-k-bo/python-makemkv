@@ -28,12 +28,16 @@ def lint(session: nox.Session) -> None:
 
 @nox.session
 def mypy(session: nox.Session) -> None:
-    session.install(".[cli]", "mypy", "nox")
-    session.run("mypy", ".")
+    session.install(".[cli,test]", "mypy")
+    session.run("mypy")
 
 
-# TODO
-# @nox.session(python=["3.9", "3.10"])
-# def test(session: nox.Session) -> None:
-#     session.install(".", "pytest")
-#     session.run("pytest")
+@nox.session(python=["3.9", "3.10", "3.11"])
+def test(session: nox.Session) -> None:
+    session.install("-e", ".[test]")
+    session.run(
+        "pytest",
+        "--cov",
+        "--cov-report=xml",
+        "--cov-report=term",
+    )
