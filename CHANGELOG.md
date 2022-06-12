@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 > :warning: Major version zero (0.y.z) is for initial development. Anything MAY change at any time. The public API SHOULD NOT be considered stable.
 
+## [unreleased]
+
+## [0.3.0]
+
+### Added
+
+- Basic test suite for known and accepted parts of makemkv log
+
+### Changed
+
+- Split parsing logic into separate internal method (by [@slick-nick-90](https://github.com/slick-nick-90))
+- Extend parser and fix common parsing issues (by [@slick-nick-90](https://github.com/slick-nick-90))
+  - Added: `codec_id`, `codec_short`, `codec_long`, `source_filename`, `segments_count`, `segments_map`, `metadata_langcode`, `metadata_language`, `volume_name`, `comment`
+  - Changed: `framerate` accepts floating point values
+  - Removed: `codec`
+
+### Fixed
+
+- `video_angle` is now a key in the `Title` dictionary (instead of `Stream`)
+
 ## [0.2.2]
 
 ### Changed
@@ -51,6 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `MakeMKV.f()` / universal firmware tool support
 
-[0.2.2]: https://github.com/d-k-bo/python-makemkv/compare/tag/v0.2.1...v0.2.2
-[0.2.1]: https://github.com/d-k-bo/python-makemkv/compare/tag/v0.2.0...v0.2.1
+[unreleased]: https://github.com/d-k-bo/python-makemkv/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/d-k-bo/python-makemkv/compare/v0.2.2...v0.3.0
+[0.2.2]: https://github.com/d-k-bo/python-makemkv/compare/v0.2.1...v0.2.2
+[0.2.1]: https://github.com/d-k-bo/python-makemkv/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/d-k-bo/python-makemkv/releases/tag/v0.2.0
