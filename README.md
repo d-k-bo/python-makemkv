@@ -59,7 +59,8 @@ pp(disc_info)
 To create a mkv file from the first title of the first disc you can use
 `makemkv.MakeMKV.mkv()`. Since this will take some time you can define a
 function that analyzes the program\'s progress or you can use the
-`makemkv.ProgressParser` class to show pretty progress bars.
+`makemkv.ProgressParser` class to show pretty progress bars
+(this requires [rich](https://github.com/Textualize/rich) to be installed).
 
 ```python
 from makemkv import MakeMKV, ProgressParser
