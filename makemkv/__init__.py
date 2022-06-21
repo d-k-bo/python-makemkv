@@ -15,7 +15,7 @@ __all__ = [
 ]
 
 try:
-    from rich.progress import BarColumn, Progress, TaskID, TimeRemainingColumn  # noqa: F401
+    from rich.progress import BarColumn  # noqa: F401
 except ImportError:
     pass
 else:
