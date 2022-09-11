@@ -236,6 +236,8 @@ class MakeMKV:
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
+        elif key in ["information", "name", "volume_name"]:
+            return_value = value
         elif key in ["metadata_langcode", "langcode"]:
             # convert 3-letter language codes to 2-letter codes
             return_value = Lang(value).pt1
