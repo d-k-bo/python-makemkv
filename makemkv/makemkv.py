@@ -236,6 +236,8 @@ class MakeMKV:
 
         if code:
             return_value = SPECIAL_VALUES.get(code, value)
+        elif key in ["information", "name", "volume_name"]:
+            return_value = value
         elif key in ["metadata_langcode", "langcode"]:
             # convert 3-letter language codes to 2-letter codes
             return_value = Lang(value).pt1
@@ -400,7 +402,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["disc"][key] = d_value  # type: ignore[literal-required] # noqa:E501
+                output["disc"][key] = d_value  # type: ignore[literal-required] # noqa: B950
 
             elif flag == "TINFO":
                 # TINFO:disc_nr,title_nr,id,code,value (wrong documented)
@@ -430,7 +432,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["titles"][title_nr][key] = d_value  # type: ignore[literal-required] # noqa:E501
+                output["titles"][title_nr][key] = d_value  # type: ignore[literal-required] # noqa: B950
 
             elif flag == "SINFO":
                 # SINFO:disc_nr,title_nr,stream_nr,id,code,value
@@ -463,7 +465,7 @@ class MakeMKV:
                     logger.error(f"Error while parsing '{line.strip()}'")
                     continue
 
-                output["titles"][title_nr]["streams"][stream_nr][key] = d_value  # type: ignore[literal-required] # noqa:E501
+                output["titles"][title_nr]["streams"][stream_nr][key] = d_value  # type: ignore[literal-required] # noqa: B950
             else:
                 logger.error(f"Error while parsing '{line.strip()}'")
 

@@ -165,7 +165,7 @@ def return_info(output: MakeMKVOutput, params: InfoCliParams) -> None:
 
 
 # see https://github.com/python/mypy/issues/731
-NestedDictItem = Union[str, int, "NestedDict", List["NestedDictItem"]]  # type: ignore [misc] # noqa:E501
+NestedDictItem = Union[str, int, "NestedDict", List["NestedDictItem"]]  # type: ignore [misc] # noqa: B950
 NestedDict = Mapping[str, NestedDictItem]  # type: ignore [misc]
 
 
